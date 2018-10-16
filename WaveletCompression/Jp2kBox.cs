@@ -8,11 +8,8 @@ using System.Threading.Tasks;
 namespace WaveletCompression {
 
 	public enum BoxTypes : uint {
-		/// <summary>
-		/// JPEG2000 Signature. The first box in a JPEG2000 file.
-		/// </summary>
-		Jp2SignatureBox = 0x6A502020,
 
+		Jp2SignatureBox = 0x6A502020,
 		FileTypeBox = 0x66747970,
 		JP2HeaderBox = 0x6A703268,
 		ImageHeaderBox = 0x69686472,
@@ -31,7 +28,6 @@ namespace WaveletCompression {
 		UuidInfoBox = 0x75696E66,
 		UuidListBox = 0x75637374,
 		UrlBox = 0x75726C20,
-
 		UnDefined = 0x0
 	}
 
@@ -90,9 +86,9 @@ namespace WaveletCompression {
 		public static Jp2kBox CreateBox(Stream stream, Jp2kBoxNavigation navigation) {
 			switch(navigation.Type) {
 				case BoxTypes.ImageHeaderBox:
-					return new ImageHeaderBox(stream, navigation);
+					return new Jp2kImageHeaderBox(stream, navigation);
 				case BoxTypes.CodestreamBox:
-					return new CodestreamBox(stream, navigation);
+					return new Jp2kCodestreamBox(stream, navigation);
 				default:
 					return null;
 			}

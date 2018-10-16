@@ -28,10 +28,10 @@ namespace WaveletCompression {
 				var boxes = ReadJp2kBoxes(stream, stream.Length);
 				var hBox = boxes.FirstOrDefault(b => b.Type == BoxTypes.JP2HeaderBox);
 				var hhBox = hBox.Child.FirstOrDefault(b => b.Type == BoxTypes.ImageHeaderBox);
-				var head = Jp2kBox.CreateBox(stream, hhBox) as ImageHeaderBox;
+				var head = Jp2kBox.CreateBox(stream, hhBox) as Jp2kImageHeaderBox;
 				Console.WriteLine($"SIZE \t{head.Width} X {head.Height} px");
 				var ccBox = boxes.FirstOrDefault(b => b.Type == BoxTypes.CodestreamBox);
-				var codestream = Jp2kBox.CreateBox(stream, ccBox) as CodestreamBox;
+				var codestream = Jp2kBox.CreateBox(stream, ccBox) as Jp2kCodestreamBox;
 			}
 			Console.ReadKey(false);
 		}

@@ -2,7 +2,7 @@
 using System.IO;
 
 namespace WaveletCompression {
-	internal class ImageHeaderBox : Jp2kBox {
+	internal class Jp2kImageHeaderBox : Jp2kBox {
 
 		private readonly uint _height;
 		private readonly uint _width;
@@ -16,7 +16,7 @@ namespace WaveletCompression {
 		public uint Height => _height;
 		public uint Width => _width;
 
-		public ImageHeaderBox(Stream stream, Jp2kBoxNavigation navigation) : base(navigation) {
+		public Jp2kImageHeaderBox(Stream stream, Jp2kBoxNavigation navigation) : base(navigation) {
 			long end = navigation.Position + navigation.Length;
 			stream.Seek(navigation.PositionData, SeekOrigin.Begin);
 			_height = stream.ReadUInt32();
