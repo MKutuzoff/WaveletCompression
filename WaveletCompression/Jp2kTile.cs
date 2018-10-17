@@ -8,10 +8,14 @@ using System.Threading.Tasks;
 namespace WaveletCompression {
 	public class Jp2kTile {
 
-		SotMarker _sot;
-		List<PltMarker> _pltMarkers = new List<PltMarker>();
+		private SotMarker _sot;
+		private List<PltMarker> _pltMarkers = new List<PltMarker>();
+		private byte[] _data;
+
+		public byte[] Data => _data;
 
 		public Jp2kTile(Stream stream) {
+			var position = stream.Position;
 			while (Jp2kMarker.Peek(stream) != MarkerType.SOD) {
 				var marker = Jp2kMarker.Read(stream);
 				switch (marker.Type) {
@@ -25,6 +29,9 @@ namespace WaveletCompression {
 						break;
 				}
 			}
+			stream.Seek(2, SeekOrigin.Current);
+			_data = new byte[position + _sot.PartLength - stream.Position];
+			stream.Read(_data, 0, _data.Length);
 		}
 	}
 }

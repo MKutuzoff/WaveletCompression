@@ -64,6 +64,8 @@ namespace WaveletCompression {
 					return new SotMarker(length, body);
 				case MarkerType.PLT:
 					return new PltMarker(length, body);
+				case MarkerType.COD:
+					return new CodMarker(length, body);
 				default:
 					return new Jp2kMarker(type, length, body);
 			}
@@ -99,6 +101,8 @@ namespace WaveletCompression {
 		private byte[] _precisions;
 		private byte[] _sbSamplingX;
 		private byte[] _sbSamplingY;
+
+		public Size Size => _size;
 
 		public SizMarker(ushort length, byte[] body) :
 			base(MarkerType.SIZ, length, body) {
@@ -153,5 +157,87 @@ namespace WaveletCompression {
 			_packet = new MemoryStream(body, 1, _packetLength);
 
 		}
+	}
+
+	public class CodMarker: Jp2kMarker {
+
+		public enum CodingStyle : byte {
+			None = 0,
+			UsePrecincts = 1,
+			UseSopMarker = 2,
+			UseEphMarker = 4
+		}
+
+		public enum CodeblockStyle : byte {
+			None = 0,
+			SelectiveArithmeticCodingBypass = 1,
+			ResetContextProbabilitiesOnCodingPassBoundaries = 2,
+			TerminateOnEachCodingPass = 4,
+			VerticalCausalContext = 8,
+			PredictableTermination = 16,
+			SegmentationSymbols = 32
+		}
+
+		public enum WaveletTransform : byte {
+			Irreversible_9_7 = 0,
+			Reversible_5_3 = 1
+		}
+
+		public enum ProgressionOrder : byte {
+			LRCP = 0,
+			RLCP = 1,
+			RPCL = 2,
+			PCRL = 3,
+			CPRL = 4
+		}
+
+		private CodingStyle _scod;
+		private byte _cblkExpnX;
+		private byte _cblkExpnY;
+		private byte[] _ppx;
+		private byte[] _ppy;
+
+		public ProgressionOrder Progression { get; private set; }
+		public ushort QualityLayers { get; private set; }
+		public byte DecompositionLevels { get; private set; }
+		public CodeblockStyle CBlkStyle { get; private set; }
+		public bool UseMultipleComponentTransform { get; private set; }
+		public WaveletTransform WaveletFilter { get; private set; }
+		public bool UsePrecincts {
+			get {
+				return (_scod & CodingStyle.UsePrecincts) != 0;
+			}
+		}
+
+		public CodMarker(ushort lenght, byte[] body) 
+			: base(MarkerType.COD, lenght, body) {
+			var mem = new MemoryStream(body);
+			_scod = (CodingStyle)mem.ReadUInt8();
+			Progression = (ProgressionOrder)mem.ReadUInt8();
+			QualityLayers = mem.ReadUInt16();
+			UseMultipleComponentTransform = mem.ReadUInt8() == 1;
+			DecompositionLevels = mem.ReadUInt8();
+			_cblkExpnX = mem.ReadUInt8();
+			_cblkExpnY = mem.ReadUInt8();
+			CBlkStyle = (CodeblockStyle)mem.ReadUInt8();
+			WaveletFilter = (WaveletTransform)mem.ReadUInt8();
+			_ppx = new byte[DecompositionLevels + 1];
+			_ppy = new byte[DecompositionLevels + 1];
+			for (int r = 0; r <= DecompositionLevels; r++) {
+				if (UsePrecincts) {
+					byte val = mem.ReadUInt8();
+					_ppx[r] = (byte)(val & 0xF);
+					_ppy[r] = (byte)((val >> 4) & 0xF);
+				} else {
+					_ppx[r] = _ppy[r] = 0xF;
+				}
+			}
+
+		}
+
+		public override string ToString() {
+			return $"CodingStyle: {_scod}\nProgression: {Progression}\nCodeblockStyle: {CBlkStyle}\nWaveletTransform: {WaveletFilter}";
+		}
+
 	}
 }

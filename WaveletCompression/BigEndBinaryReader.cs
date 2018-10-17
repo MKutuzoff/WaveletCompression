@@ -8,9 +8,6 @@ using System.Threading.Tasks;
 namespace WaveletCompression {
 	public static class BigEndBinaryReader {
 
-		public static bool IsEOF(this Stream stream) {
-			return stream.Position >= stream.Length;
-		}
 		public static ulong ReadUInt64(this Stream stream) {
 			byte[] buf64 = new byte[sizeof(ulong)];
 			stream.Read(buf64, 0, sizeof(ulong));

@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.IO;
 using System.Linq;
-
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace WaveletCompression {
 
@@ -29,9 +30,10 @@ namespace WaveletCompression {
 				var hBox = boxes.FirstOrDefault(b => b.Type == BoxTypes.JP2HeaderBox);
 				var hhBox = hBox.Child.FirstOrDefault(b => b.Type == BoxTypes.ImageHeaderBox);
 				var head = Jp2kBox.CreateBox(stream, hhBox) as Jp2kImageHeaderBox;
-				Console.WriteLine($"SIZE \t{head.Width} X {head.Height} px");
 				var ccBox = boxes.FirstOrDefault(b => b.Type == BoxTypes.CodestreamBox);
 				var codestream = Jp2kBox.CreateBox(stream, ccBox) as Jp2kCodestreamBox;
+				var size = codestream.Size;
+				//File.WriteAllBytes("img.raw", codestream.Data);
 			}
 			Console.ReadKey(false);
 		}
