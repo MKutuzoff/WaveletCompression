@@ -33,10 +33,5 @@ namespace WaveletCompression {
 			}
 		}
 
-		public byte[] Data {
-			get {
-				return _tiles[0].Data;
-			}
-		}
 	}
 }

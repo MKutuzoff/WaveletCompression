@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BigEndBinaryReader.cs" />
+    <Compile Include="BitReader.cs" />
     <Compile Include="Jp2kCodestreamBox.cs" />
     <Compile Include="Jp2kImageHeaderBox.cs" />
     <Compile Include="Jp2kBox.cs" />

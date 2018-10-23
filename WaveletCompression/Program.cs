@@ -32,10 +32,7 @@ namespace WaveletCompression {
 				var head = Jp2kBox.CreateBox(stream, hhBox) as Jp2kImageHeaderBox;
 				var ccBox = boxes.FirstOrDefault(b => b.Type == BoxTypes.CodestreamBox);
 				var codestream = Jp2kBox.CreateBox(stream, ccBox) as Jp2kCodestreamBox;
-				var size = codestream.Size;
-				//File.WriteAllBytes("img.raw", codestream.Data);
 			}
-			Console.ReadKey(false);
 		}
 
 		private static IEnumerable<Jp2kBoxNavigation> ReadJp2kBoxes(Stream stream, long length) {
