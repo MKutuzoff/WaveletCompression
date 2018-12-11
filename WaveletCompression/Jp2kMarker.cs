@@ -97,12 +97,15 @@ namespace WaveletCompression {
 		private Size _size;
 		private Point _offset;
 		private Size _tile;
+		private Point _tileOffset;
 		private ushort _components;
 		private byte[] _precisions;
 		private byte[] _sbSamplingX;
 		private byte[] _sbSamplingY;
 
 		public Size Size => _size;
+		public Point Offset => _offset;
+		public ushort Components => _components;
 
 		public SizMarker(ushort length, byte[] body) :
 			base(MarkerType.SIZ, length, body) {
@@ -112,6 +115,7 @@ namespace WaveletCompression {
 			_size = new Size((int)memory.ReadUInt32(), (int)memory.ReadUInt32());
 			_offset = new Point((int)memory.ReadUInt32(), (int)memory.ReadUInt32());
 			_tile = new Size((int)memory.ReadUInt32(), (int)memory.ReadUInt32());
+			_tileOffset = new Point((int)memory.ReadUInt32(), (int)memory.ReadUInt32());
 			_components = memory.ReadUInt16();
 			_precisions = new byte[_components];
 			_sbSamplingX = new byte[_components];
@@ -161,6 +165,8 @@ namespace WaveletCompression {
 
 	public class CodMarker: Jp2kMarker {
 
+		private const byte SIZE_ADD = 0x02;
+
 		public enum CodingStyle : byte {
 			None = 0,
 			UsePrecincts = 1,
@@ -192,10 +198,13 @@ namespace WaveletCompression {
 		}
 
 		private CodingStyle _scod;
-		private byte _cblkExpnX;
-		private byte _cblkExpnY;
+		private int _cblkExpnX;
+		private int _cblkExpnY;
 		private byte[] _ppx;
 		private byte[] _ppy;
+
+		public int CdBlkExpnX => _cblkExpnX;
+		public int CdBlkExpnY => _cblkExpnY;
 
 		public ProgressionOrder Progression { get; private set; }
 		public ushort QualityLayers { get; private set; }
@@ -217,8 +226,8 @@ namespace WaveletCompression {
 			QualityLayers = mem.ReadUInt16();
 			UseMultipleComponentTransform = mem.ReadUInt8() == 1;
 			DecompositionLevels = mem.ReadUInt8();
-			_cblkExpnX = mem.ReadUInt8();
-			_cblkExpnY = mem.ReadUInt8();
+			_cblkExpnX = mem.ReadUInt8() + SIZE_ADD;
+			_cblkExpnY = mem.ReadUInt8() + SIZE_ADD;
 			CBlkStyle = (CodeblockStyle)mem.ReadUInt8();
 			WaveletFilter = (WaveletTransform)mem.ReadUInt8();
 			_ppx = new byte[DecompositionLevels + 1];

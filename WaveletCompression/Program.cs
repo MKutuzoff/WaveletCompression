@@ -23,8 +23,7 @@ namespace WaveletCompression {
 
 		protected const int USE_EXTENDED_LENGTH = 1;
 		static void Main(string[] args) {
-			Console.WriteLine(BitConverter.IsLittleEndian);
-			
+
 			using (var stream = File.OpenRead("img.jp2")) {
 				var boxes = ReadJp2kBoxes(stream, stream.Length);
 				var hBox = boxes.FirstOrDefault(b => b.Type == BoxTypes.JP2HeaderBox);

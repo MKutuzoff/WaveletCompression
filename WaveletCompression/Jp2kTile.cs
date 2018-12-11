@@ -58,20 +58,21 @@ namespace WaveletCompression {
 
 		private static TileBlock ReadTileBlock(BitReader bitReader) {
 			if (bitReader.Read(1) > 0) {
-				if (bitReader.Read(1) == 0) { }
-
-				do {
-					if (bitReader.EOF) return null;
-				} while (bitReader.Read(1) != 1);
-
-
+				if (bitReader.Read(1) == 1) {
+					//Has tag tree
+					do {
+						if (bitReader.EOF)
+							return null;
+					} while (bitReader.Read(1) != 1);
+				}
+				
 				int numBits = 3;
 				var codePasses = ReadCodePasses(bitReader);
 				int lBlock = 0;
 				while (bitReader.Read(1) > 0)
 					++lBlock;
 				numBits += lBlock;
-				var l = numBits + Log2(codePasses);
+				var l = numBits + MathUtils.Log2(codePasses);
 				var length = bitReader.Read(l);
 				return new TileBlock(length, bitReader.CopyByte(length));
 			}
@@ -91,11 +92,5 @@ namespace WaveletCompression {
 			return 37 + bitReader.Read(7);
 		}
 
-		private static int Log2(int value) {
-			int i = 0;
-			for (i = -1; value != 0; ++i)
-				value >>= 1;
-			return i == -1 ? 0 : i;
-		}
 	}
 }

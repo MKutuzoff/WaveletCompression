@@ -23,6 +23,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <LangVersion>default</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -47,13 +48,19 @@
   <ItemGroup>
     <Compile Include="BigEndBinaryReader.cs" />
     <Compile Include="BitReader.cs" />
+    <Compile Include="CodeBlock.cs" />
     <Compile Include="Jp2kCodestreamBox.cs" />
     <Compile Include="Jp2kImageHeaderBox.cs" />
     <Compile Include="Jp2kBox.cs" />
     <Compile Include="Jp2kMarker.cs" />
     <Compile Include="Jp2kTile.cs" />
+    <Compile Include="Location.cs" />
+    <Compile Include="MathUtilities.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResolutionLayer.cs" />
+    <Compile Include="Band.cs" />
+    <Compile Include="WaveleteCompressionException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
