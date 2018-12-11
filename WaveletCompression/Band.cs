@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace WaveletCompression {
-	public class Band: Location {
+	public class Band {
 
 		public enum Orientir {
 			LL = 0,
@@ -15,12 +15,13 @@ namespace WaveletCompression {
 			HH = 3
 		}
 
+		private readonly Location _location;
 		private readonly Orientir _orientir;
 		private readonly CodeBlock[] _codeBlocks;
 
-		public Band(Orientir orientir, Point start, Size size, Size cdBlckSize) : 
-			base(start, size) {
+		public Band(Orientir orientir, Point start, Size size, Size cdBlckSize) {
 			_orientir = orientir;
+			_location = new Location(start, size);
 			// Compute code block counts
 			int cCdBlkW = MathUtils.CeilDiv(size.Width, cdBlckSize.Width);
 			int cCdBlkH = MathUtils.CeilDiv(size.Height, cdBlckSize.Height);

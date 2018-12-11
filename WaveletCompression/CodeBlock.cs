@@ -1,9 +1,11 @@
 ﻿using System.Drawing;
 
 namespace WaveletCompression {
-	public class CodeBlock: Location {
-		
-		public CodeBlock(Point start, Point end) : 
-			base(start, end)  {	}
+	public class CodeBlock {
+
+		private readonly Location _location;
+		public CodeBlock(Point start, Point end) {
+			_location = new Location(start, end);
+		}
 	}
 }

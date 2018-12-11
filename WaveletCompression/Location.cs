@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 
 namespace WaveletCompression {
-	public class Location {
+	public struct Location {
 
 		private readonly Point _start;
 		private readonly Point _end;

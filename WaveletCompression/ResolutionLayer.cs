@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 using System.Drawing;
 
 namespace WaveletCompression {
-	public class ResolutionLevel: Location {
+	public class ResolutionLevel {
 
-		private int _level;
+		private readonly int _level;
+		private readonly Location _location;
 		private Band[] _bands;
 
-		public ResolutionLevel(int level, Point start, Size size, Size cdBlckSize) 
-			: base(start, size) {
+		public ResolutionLevel(int level, Point start, Size size, Size cdBlckSize) {
+			_location = new Location(start, size);
 			_level = level;
 
 			if (level == 0) {
