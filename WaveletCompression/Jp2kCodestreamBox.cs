@@ -54,7 +54,6 @@ namespace WaveletCompression {
 			for(int c = 0; c < components; ++c) {
 				for (int l = 0; l <= level; ++l )
 				Console.WriteLine(_resolutionLevels[c, l]);
-				Console.WriteLine();
 			}
 		}
 	}

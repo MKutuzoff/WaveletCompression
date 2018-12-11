@@ -40,7 +40,7 @@ namespace WaveletCompression {
 		public override string ToString() {
 			var sb = new StringBuilder();
 			sb.AppendLine($"BAND {_orientir}");
-			sb.AppendLine(base.ToString());
+			sb.AppendLine(_location.ToString());
 			for (int c = 0; c < _codeBlocks.Length; ++c) {
 				sb.AppendLine($"CODE BLOCK {c}");
 				sb.AppendLine(_codeBlocks[c].ToString());

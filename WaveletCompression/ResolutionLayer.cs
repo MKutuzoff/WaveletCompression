@@ -24,17 +24,17 @@ namespace WaveletCompression {
 				// Other level has only LH, HL, HH bands
 				_bands = new Band[3];
 				// Bands size div of size resolution
-				size = new Size(MathUtils.CeilDiv(size.Width, 2), MathUtils.CeilDiv(size.Height, 2));
-				for (int i = 0; i < 3; ++i) {
-					_bands[i] = new Band((Band.Orientir)(i + 1), start, size, cdBlckSize);
-				}
+				size = new Size(MathUtils.CeilDivPow2(size.Width, 1), MathUtils.CeilDivPow2(size.Height, 1));
+				_bands[0] = new Band(Band.Orientir.HL, start, size, cdBlckSize);
+				_bands[1] = new Band(Band.Orientir.LH, start, size, cdBlckSize);
+				_bands[2] = new Band(Band.Orientir.HH, start, size, cdBlckSize);
 			}
 		}
 
 		public override string ToString() {
 			StringBuilder sb = new StringBuilder();
 			sb.AppendLine($"RESOLUTION LEVEL {_level}");
-			sb.AppendLine(base.ToString());
+			sb.AppendLine(_location.ToString());
 			for(int b = 0; b < _bands.Length; ++b) {
 				sb.AppendLine(_bands[b].ToString());
 			}
