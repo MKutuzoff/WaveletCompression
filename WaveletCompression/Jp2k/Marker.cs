@@ -1,8 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Drawing;
+using WaveletCompression;
 
-namespace WaveletCompression {
+namespace Jp2k {
 
 	public enum MarkerType : ushort {
 		SOC = 0xFF4F,
@@ -27,14 +28,14 @@ namespace WaveletCompression {
 		COM = 0xFF64,
 	}
 
-	public class Jp2kMarker {
+	public class Marker {
 		protected MarkerType _type;
 		protected ushort _length;
 		protected byte[] _body;
 
 		public MarkerType Type => _type;
 
-		protected Jp2kMarker(MarkerType type, ushort length, byte[] body) {
+		protected Marker(MarkerType type, ushort length, byte[] body) {
 			_type = type;
 			_length = length;
 			_body = body;
@@ -46,7 +47,7 @@ namespace WaveletCompression {
 			return type;
 		}
 
-		public static Jp2kMarker Read(Stream stream) {
+		public static Marker Read(Stream stream) {
 			MarkerType type = ReadMarkerType(stream);
 			ushort length = 0;
 			byte[] body = null;
@@ -67,7 +68,7 @@ namespace WaveletCompression {
 				case MarkerType.COD:
 					return new CodMarker(length, body);
 				default:
-					return new Jp2kMarker(type, length, body);
+					return new Marker(type, length, body);
 			}
 
 		}
@@ -91,7 +92,7 @@ namespace WaveletCompression {
 		}
 	}
 
-	public class SizMarker : Jp2kMarker {
+	public class SizMarker : Marker {
 
 		private ushort _profile;
 		private Size _size;
@@ -128,7 +129,7 @@ namespace WaveletCompression {
 		}
 	}
 
-	public class SotMarker : Jp2kMarker {
+	public class SotMarker : Marker {
 
 		private readonly ushort _index;
 		private readonly uint _pLength;
@@ -147,7 +148,7 @@ namespace WaveletCompression {
 		}
 	}
 
-	public class PltMarker : Jp2kMarker {
+	public class PltMarker : Marker {
 
 		private byte _zIndex;
 		private ushort _packetLength;
@@ -163,7 +164,7 @@ namespace WaveletCompression {
 		}
 	}
 
-	public class CodMarker: Jp2kMarker {
+	public class CodMarker: Marker {
 
 		private const byte SIZE_ADD = 0x02;
 

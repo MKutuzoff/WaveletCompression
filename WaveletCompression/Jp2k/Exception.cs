@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WaveletCompression {
+namespace Jp2k {
 	public class MarkerIsNotException: Exception {
 
 		private readonly MarkerType _marker;

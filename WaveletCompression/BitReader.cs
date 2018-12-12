@@ -8,8 +8,8 @@ namespace WaveletCompression {
 	public class BitReader {
 
 		byte[] _data = null;
-		byte _curByte = 0;
-		byte _offset = 0;
+		int _buffer = 0;
+		int _offset = 0;
 		int _position = 0;
 
 		public BitReader(byte[] data) {
@@ -22,14 +22,15 @@ namespace WaveletCompression {
 			}
 		}
 
-		private bool ReadBit() {
+		public bool ReadBit() {
 			if (_data != null && _position < _data.Length) {
 				if (_offset == 0) {
-					_curByte = _data[_position++];
-					_offset = 8;
+					_buffer = (_buffer << 8) & 0xffff;
+					_offset = _buffer == 0xff00 ? 7 : 8;
+					_buffer |= _data[_position++];
 				}
 				--_offset;
-				return ((_curByte >> _offset) & 1) == 1;
+				return ((_buffer >> _offset) & 1) == 1;
 			}
 			return false;
 		}

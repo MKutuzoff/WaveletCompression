@@ -5,17 +5,10 @@ using System.IO;
 using System.Linq;
 using System.Drawing;
 using System.Drawing.Imaging;
+using Jp2k;
 
 namespace WaveletCompression {
 
-
-	[StructLayout(LayoutKind.Explicit, Pack = 1)]
-	public struct Jp2kHead {
-		[FieldOffset(0)] public readonly uint magic;
-		[FieldOffset(4)] public readonly uint majver;
-		[FieldOffset(8)] public readonly uint minver;
-		[FieldOffset(12)] public readonly uint numcompatcodes;
-	}
 
 	class Program {
 
@@ -28,14 +21,14 @@ namespace WaveletCompression {
 				var boxes = ReadJp2kBoxes(stream, stream.Length);
 				var hBox = boxes.FirstOrDefault(b => b.Type == BoxTypes.JP2HeaderBox);
 				var hhBox = hBox.Child.FirstOrDefault(b => b.Type == BoxTypes.ImageHeaderBox);
-				var head = Jp2kBox.CreateBox(stream, hhBox) as Jp2kImageHeaderBox;
+				var head = Box.CreateBox(stream, hhBox) as ImageHeaderBox;
 				var ccBox = boxes.FirstOrDefault(b => b.Type == BoxTypes.CodestreamBox);
-				var codestream = Jp2kBox.CreateBox(stream, ccBox) as Jp2kCodestreamBox;
+				var codestream = Box.CreateBox(stream, ccBox) as CodestreamBox;
 			}
 		}
 
-		private static IEnumerable<Jp2kBoxNavigation> ReadJp2kBoxes(Stream stream, long length) {
-			List<Jp2kBoxNavigation> boxes = new List<Jp2kBoxNavigation>();
+		private static IEnumerable<BoxNavigation> ReadJp2kBoxes(Stream stream, long length) {
+			List<BoxNavigation> boxes = new List<BoxNavigation>();
 			while (length > 0) {
 				var box = ReadJp2kBox(stream, length);
 				length -= box.Length;
@@ -44,7 +37,7 @@ namespace WaveletCompression {
 			return boxes;
 		}
 
-		private static Jp2kBoxNavigation ReadJp2kBox(Stream stream, long limit) {
+		private static BoxNavigation ReadJp2kBox(Stream stream, long limit) {
 			long position = stream.Position;
 			long length = stream.ReadUInt32();
 			if (length == 0)
@@ -56,12 +49,12 @@ namespace WaveletCompression {
 			if (length == USE_EXTENDED_LENGTH) {
 				eSize = stream.ReadUInt64();
 			}
-			if (Jp2kBoxNavigation.IsSuperbox(type)) {
+			if (BoxNavigation.IsSuperbox(type)) {
 				var child = ReadJp2kBoxes(stream, length - (stream.Position - position));
-				return new Jp2kBoxNavigation(position, length, type, eSize, child);
+				return new BoxNavigation(position, length, type, eSize, child);
 			} else {
 				stream.Seek(position + length, SeekOrigin.Begin);
-				return new Jp2kBoxNavigation(position, length, type, eSize);
+				return new BoxNavigation(position, length, type, eSize);
 			}
 		}
 	}

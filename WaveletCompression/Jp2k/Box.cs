@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WaveletCompression {
+namespace Jp2k {
 
 	public enum BoxTypes : uint {
 
@@ -32,7 +32,7 @@ namespace WaveletCompression {
 	}
 
 
-	public class Jp2kBoxNavigation {
+	public class BoxNavigation {
 
 		public static bool IsSuperbox(uint boxType) {
 			switch (boxType) {
@@ -49,7 +49,7 @@ namespace WaveletCompression {
 		private readonly long _length;
 		private readonly BoxTypes _type;
 		private readonly ulong _eSize;
-		private readonly IEnumerable<Jp2kBoxNavigation> _child;
+		private readonly IEnumerable<BoxNavigation> _child;
 
 		public long Position => _position;
 
@@ -62,9 +62,9 @@ namespace WaveletCompression {
 
 		public BoxTypes Type => _type;
 
-		public IEnumerable<Jp2kBoxNavigation> Child => _child;
+		public IEnumerable<BoxNavigation> Child => _child;
 
-		public Jp2kBoxNavigation(long position, long length, uint type, ulong eSize, IEnumerable<Jp2kBoxNavigation> child = null) {
+		public BoxNavigation(long position, long length, uint type, ulong eSize, IEnumerable<BoxNavigation> child = null) {
 			_position = position;
 			_length = length;
 			_type = (BoxTypes)type;
@@ -74,21 +74,21 @@ namespace WaveletCompression {
 		
 	}
 
-	public class Jp2kBox {
+	public class Box {
 
-		private readonly Jp2kBoxNavigation _navigation;
+		private readonly BoxNavigation _navigation;
 
-		protected Jp2kBox(Jp2kBoxNavigation navigation) {
+		protected Box(BoxNavigation navigation) {
 			_navigation = navigation;
 		}
 
 
-		public static Jp2kBox CreateBox(Stream stream, Jp2kBoxNavigation navigation) {
+		public static Box CreateBox(Stream stream, BoxNavigation navigation) {
 			switch(navigation.Type) {
 				case BoxTypes.ImageHeaderBox:
-					return new Jp2kImageHeaderBox(stream, navigation);
+					return new ImageHeaderBox(stream, navigation);
 				case BoxTypes.CodestreamBox:
-					return new Jp2kCodestreamBox(stream, navigation);
+					return new CodestreamBox(stream, navigation);
 				default:
 					return null;
 			}

@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
+using WaveletCompression;
 
-namespace WaveletCompression {
+namespace Jp2k {
 	public class CodeBlock {
 
 		private readonly Location _location;
