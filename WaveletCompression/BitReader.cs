@@ -54,5 +54,18 @@ namespace WaveletCompression {
 				return null;
 			}
 		}
+
+		public int ReadCodePasses() {
+			int n = 0;
+			if (!ReadBit())
+				return 1;
+			else if (!ReadBit())
+				return 2;
+			else if ((n = Read(2)) != 3)
+				return 3 + n;
+			else if ((n = Read(5)) != 31)
+				return 6 + n;
+			return 37 + Read(7);
+		}
 	}
 }

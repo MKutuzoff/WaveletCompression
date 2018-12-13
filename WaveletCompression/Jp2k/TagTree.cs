@@ -22,7 +22,7 @@ namespace Jp2k {
 
 		private readonly int _horizontalRes;
 		private readonly int _verticalRes;
-		private TagTreeNode[] _tree;
+		private readonly TagTreeNode[] _tree;
 
 		public TagTree(int horizaontalRes, int verticalRes) {
 			_horizontalRes = horizaontalRes;

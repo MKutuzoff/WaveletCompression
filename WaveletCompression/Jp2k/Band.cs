@@ -21,11 +21,7 @@ namespace Jp2k {
 		private readonly TagTree _inclustionTagTree;
 		private readonly TagTree _msbTagTree;
 
-		public BandOrientir Orientir => _orientir;
-		public CodeBlock[] CodeBlocks => _codeBlocks;
-		public TagTree InclustionTT => _inclustionTagTree;
-		public TagTree MsbTT => _msbTagTree;
-
+		public int DataSize => _codeBlocks.Sum(cb => cb.DataSize);
 
 		public Band(BandOrientir orientir, Point start, Size size, Size cdBlckSize) {
 			// Compute code block counts
@@ -48,15 +44,53 @@ namespace Jp2k {
 			_msbTagTree = new TagTree(widthCount, heightCount);
 		}
 
+		public void ReadDataInfo(BitReader bitReader) {
+			for (int cb = 0; cb < _codeBlocks.Length; ++cb) {
+				var included = _inclustionTagTree.Decode(cb, 1, bitReader) == 1;
+				if (included) {
+					MsbTagTreeDecode(cb, bitReader);
+					var codePasses = bitReader.ReadCodePasses();
+					var code = GetCommaCode(bitReader);
+					var bits = code + 3; // magic value 3
+					var length = bits + MathUtils.Log2(codePasses);
+					_codeBlocks[cb].DataSize = bitReader.Read(length);
+				}
+			}
+		}
+
+		public void CopyData(BitReader bitReader) {
+			for(int cb = 0; cb < _codeBlocks.Length; ++cb) {
+				_codeBlocks[cb].CopyData(bitReader);
+			}
+		}
+
 		public override string ToString() {
 			var sb = new StringBuilder();
-			sb.AppendLine($"BAND {_orientir}");
+			sb.AppendLine($"BAND {_orientir} SIZE: {DataSize}");
 			sb.AppendLine(_location.ToString());
 			for (int c = 0; c < _codeBlocks.Length; ++c) {
-				sb.AppendLine($"CODE BLOCK {c}");
+				sb.AppendLine($"CODE BLOCK {c} SIZE: {_codeBlocks[c].DataSize}");
 				sb.AppendLine(_codeBlocks[c].ToString());
 			}
 			return sb.ToString();
+		}
+
+		private static int GetCommaCode(BitReader bitReader) {
+			int m = 0;
+			while (bitReader.ReadBit())
+				++m;
+			return m;
+		}
+
+		private void MsbTagTreeDecode(int codeBlock, BitReader bitReader) {
+			int i = 1;
+			for (; ; ) {
+				int ret = _msbTagTree.Decode(codeBlock, i, bitReader);
+				if (ret > 0) {
+					break;
+				}
+				++i;
+			}
 		}
 	}
 }

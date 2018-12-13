@@ -12,8 +12,7 @@ namespace Jp2k {
 		private readonly int _level;
 		private readonly Location _location;
 		private Band[] _bands;
-
-		public Band[] Bands => _bands;
+		public int DataSize => _bands.Sum(b => b.DataSize);
 
 		public ResolutionLevel(int level, Point start, Size srcSize, Size cdBlckSize) {
 			_location = new Location(start, srcSize);
@@ -45,9 +44,19 @@ namespace Jp2k {
 			}
 		}
 
+		public void ReadBlockData(BitReader bitReader) {
+			if (bitReader.ReadBit() && !bitReader.EOF) {
+				foreach (var band in _bands) {
+					band.ReadDataInfo(bitReader);
+				}
+				foreach (var band in _bands) {
+					band.CopyData(bitReader);
+				}
+			}
+		}
 		public override string ToString() {
 			StringBuilder sb = new StringBuilder();
-			sb.AppendLine($"RESOLUTION LEVEL {_level}");
+			sb.AppendLine($"RESOLUTION LEVEL {_level} SIZE: {DataSize}");
 			sb.AppendLine(_location.ToString());
 			sb.AppendLine();
 			for (int b = 0; b < _bands.Length; ++b) {
