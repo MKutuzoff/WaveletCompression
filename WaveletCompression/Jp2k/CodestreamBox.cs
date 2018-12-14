@@ -44,7 +44,6 @@ namespace Jp2k {
 			while (Marker.Peek(stream) != MarkerType.EOC) {
 				_tiles.Add(new Tile(SizMarker.Components, CodMarker.DecompositionLevels, stream, _resolutionLevels));
 			}
-
 		}
 
 		private void ComputeResolution(SizMarker sizMarker, CodMarker codMarker) {

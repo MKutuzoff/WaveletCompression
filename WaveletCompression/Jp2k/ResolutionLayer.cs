@@ -53,7 +53,7 @@ namespace Jp2k {
 					band.Read(bitReader);
 				}
 				_dataPos = bitReader.Position;
-				bitReader.Move(DataSize);
+				bitReader.Skip(DataSize);
 			}
 		}
 		public override string ToString() {

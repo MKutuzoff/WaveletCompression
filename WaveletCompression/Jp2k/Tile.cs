@@ -10,24 +10,8 @@ using WaveletCompression;
 namespace Jp2k {
 	public class Tile {
 
-		private class TileBlock {
-			readonly int _length;
-			readonly BitReader _data;
-
-			public int Size {  get { return _length; } }
-
-			public TileBlock(int length, byte[] data) {
-				_length = length;
-				_data = new BitReader(data);
-			}
-
-
-		}
-
 		private SotMarker _sot;
 		private List<PltMarker> _pltMarkers = new List<PltMarker>();
-
-		private List<TileBlock> _tileBlocks = new List<TileBlock>();
 
 		public Tile(int components, int level, Stream stream, ResolutionLevel[,] resolutionLevels) {
 			var position = stream.Position;

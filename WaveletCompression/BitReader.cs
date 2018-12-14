@@ -45,9 +45,9 @@ namespace WaveletCompression {
 			return result;
 		}
 
-		public long Move(long offset) {
+		public long Skip(long length) {
 			_offset = 0;
-			return _stream.Seek(offset, SeekOrigin.Current);
+			return _stream.Seek(length, SeekOrigin.Current);
 		}
 
 		public byte[] CopyByte(int length) {
