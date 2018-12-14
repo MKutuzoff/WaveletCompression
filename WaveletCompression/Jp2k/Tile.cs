@@ -45,13 +45,10 @@ namespace Jp2k {
 				}
 			}
 			stream.Seek(2, SeekOrigin.Current);
-			var data = new byte[position + _sot.PartLength - stream.Position];
-			stream.Read(data, 0, data.Length);
-			var bitReader = new BitReader(data);
-
+			var bitReader = new BitReader(stream);
 			for (int l = 0; l <= level; ++l) {
 				for (int c = 0; c < components; ++c) {
-					resolutionLevels[c, l].ReadBlockData(bitReader);
+					resolutionLevels[c, l].Read(bitReader);
 					Console.WriteLine(resolutionLevels[c, l]);
 				}
 			}

@@ -44,23 +44,17 @@ namespace Jp2k {
 			_msbTagTree = new TagTree(widthCount, heightCount);
 		}
 
-		public void ReadDataInfo(BitReader bitReader) {
+		public void Read(BitReader bitReader) {
 			for (int cb = 0; cb < _codeBlocks.Length; ++cb) {
 				var included = _inclustionTagTree.Decode(cb, 1, bitReader) == 1;
 				if (included) {
 					MsbTagTreeDecode(cb, bitReader);
-					var codePasses = bitReader.ReadCodePasses();
+					_codeBlocks[cb].NumPasses = bitReader.ReadVLengthCode();
 					var code = GetCommaCode(bitReader);
 					var bits = code + 3; // magic value 3
-					var length = bits + MathUtils.Log2(codePasses);
+					var length = bits + MathUtils.Log2(_codeBlocks[cb].NumPasses);
 					_codeBlocks[cb].DataSize = bitReader.Read(length);
 				}
-			}
-		}
-
-		public void CopyData(BitReader bitReader) {
-			for(int cb = 0; cb < _codeBlocks.Length; ++cb) {
-				_codeBlocks[cb].CopyData(bitReader);
 			}
 		}
 

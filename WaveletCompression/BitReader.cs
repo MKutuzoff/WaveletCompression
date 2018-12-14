@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,27 +8,28 @@ using System.Threading.Tasks;
 namespace WaveletCompression {
 	public class BitReader {
 
-		byte[] _data = null;
-		int _buffer = 0;
-		int _offset = 0;
-		int _position = 0;
+		private Stream _stream = null;
+		private int _buffer = 0;
+		private int _offset = 0;
 
-		public BitReader(byte[] data) {
-			_data = data;
+		public long Position { get => _stream.Position; }
+
+		public BitReader(Stream stream) {
+			_stream = stream;
 		}
 
 		public bool EOF {
 			get {
-				return _position >= _data.Length;
+				return _stream.Position >= _stream.Length;
 			}
 		}
 
 		public bool ReadBit() {
-			if (_data != null && _position < _data.Length) {
+			if (!EOF) {
 				if (_offset == 0) {
 					_buffer = (_buffer << 8) & 0xffff;
 					_offset = _buffer == 0xff00 ? 7 : 8;
-					_buffer |= _data[_position++];
+					_buffer |= _stream.ReadByte();
 				}
 				--_offset;
 				return ((_buffer >> _offset) & 1) == 1;
@@ -43,19 +45,23 @@ namespace WaveletCompression {
 			return result;
 		}
 
+		public long Move(long offset) {
+			_offset = 0;
+			return _stream.Seek(offset, SeekOrigin.Current);
+		}
+
 		public byte[] CopyByte(int length) {
-			if (_position + length < _data.Length) {
+			if (_stream.Position + length < _stream.Length) {
 				byte[] data = new byte[length];
-				Array.Copy(_data, _position, data, 0, length);
+				_stream.Read(data, 0, length);
 				_offset = 0;
-				_position += length;
 				return data;
 			} else {
 				return null;
 			}
 		}
 
-		public int ReadCodePasses() {
+		public int ReadVLengthCode() {
 			int n = 0;
 			if (!ReadBit())
 				return 1;

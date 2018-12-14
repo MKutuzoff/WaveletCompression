@@ -11,6 +11,8 @@ namespace Jp2k {
 
 		private readonly int _level;
 		private readonly Location _location;
+		private long _infoPos;
+		private long _dataPos;
 		private Band[] _bands;
 		public int DataSize => _bands.Sum(b => b.DataSize);
 
@@ -44,14 +46,14 @@ namespace Jp2k {
 			}
 		}
 
-		public void ReadBlockData(BitReader bitReader) {
+		public void Read(BitReader bitReader) {
+			_infoPos = bitReader.Position;
 			if (bitReader.ReadBit() && !bitReader.EOF) {
 				foreach (var band in _bands) {
-					band.ReadDataInfo(bitReader);
+					band.Read(bitReader);
 				}
-				foreach (var band in _bands) {
-					band.CopyData(bitReader);
-				}
+				_dataPos = bitReader.Position;
+				bitReader.Move(DataSize);
 			}
 		}
 		public override string ToString() {

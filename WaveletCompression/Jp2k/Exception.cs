@@ -21,6 +21,5 @@ namespace Jp2k {
 		public MarkerIsNotException(MarkerType marker): 
 			this(marker, string.Format("The {0} marker is not", marker.ToString())) {
 		}
-		
 	}
 }
